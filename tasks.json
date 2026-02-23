@@ -6,7 +6,7 @@
   "repo": "https://github.com/shinramenisbae/mashed",
   "agents": {
     "design": {"status": "completed", "assignedTo": null},
-    "backend": {"status": "running", "assignedTo": "agent:main:subagent:fd3a49a4-631d-4589-96e2-95f2e8a2dd02"},
+    "backend": {"status": "completed", "assignedTo": null},
     "frontend": {"status": "running", "assignedTo": "agent:main:subagent:1812cf5d-0a05-4b2c-bff7-3756b2e26c42"},
     "devops": {"status": "completed", "assignedTo": "agent:main:subagent:6e0ba842-7d19-4012-bc47-287641fafc07"}
   },
@@ -36,11 +36,11 @@
       "id": "T3",
       "title": "Build backend API and WebSocket server",
       "agent": "backend",
-      "status": "running",
+      "status": "completed",
       "dependsOn": ["T1", "T2"],
       "deliverables": ["server/", "websocket handlers", "player matching", "audio storage"],
       "startedAt": "2026-02-23T21:20:00Z",
-      "completedAt": null
+      "completedAt": "2026-02-23T21:30:00Z"
     },
     {
       "id": "T4",
