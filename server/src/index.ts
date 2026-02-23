@@ -90,7 +90,10 @@ const socketToPlayer = new Map<string, { playerId: string; roomId: string }>();
 
 // Express middleware
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(join(__dirname, '../../client/dist')));
+
+// Serve static client files
+const clientDistPath = process.env.CLIENT_DIST_PATH || join(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
 
 // Initialize upload directory
 await ensureUploadDir();
@@ -218,7 +221,7 @@ app.get('/api/rooms/:roomId', (req, res) => {
 
 // Serve React app (catch-all)
 app.get('*', (_req, res) => {
-  res.sendFile(join(__dirname, '../../client/dist/index.html'));
+  res.sendFile(join(clientDistPath, 'index.html'));
 });
 
 // ==================== Socket.IO Handlers ====================

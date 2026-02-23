@@ -1,14 +1,26 @@
 {
   "project": "Mashed",
-  "description": "Online party game: players make sounds → others select GIF + caption to match",
+  "description": "Online party game: players make sounds \u2192 others select GIF + caption to match",
   "createdAt": "2026-02-23T21:00:00Z",
   "status": "in_progress",
   "repo": "https://github.com/shinramenisbae/mashed",
   "agents": {
-    "design": {"status": "completed", "assignedTo": null},
-    "backend": {"status": "completed", "assignedTo": null},
-    "frontend": {"status": "completed", "assignedTo": null},
-    "devops": {"status": "completed", "assignedTo": "agent:main:subagent:6e0ba842-7d19-4012-bc47-287641fafc07"}
+    "design": {
+      "status": "completed",
+      "assignedTo": null
+    },
+    "backend": {
+      "status": "completed",
+      "assignedTo": null
+    },
+    "frontend": {
+      "status": "completed",
+      "assignedTo": null
+    },
+    "devops": {
+      "status": "completed",
+      "assignedTo": "agent:main:subagent:6e0ba842-7d19-4012-bc47-287641fafc07"
+    }
   },
   "tasks": [
     {
@@ -17,7 +29,11 @@
       "agent": "design",
       "status": "completed",
       "dependsOn": [],
-      "deliverables": ["game-flow.md", "data-models.json", "wireframes.md"],
+      "deliverables": [
+        "game-flow.md",
+        "data-models.json",
+        "wireframes.md"
+      ],
       "startedAt": "2026-02-23T21:16:00Z",
       "completedAt": "2026-02-23T21:25:00Z"
     },
@@ -27,7 +43,12 @@
       "agent": "devops",
       "status": "completed",
       "dependsOn": [],
-      "deliverables": ["GitHub repo", "README.md", ".gitignore", "LICENSE"],
+      "deliverables": [
+        "GitHub repo",
+        "README.md",
+        ".gitignore",
+        "LICENSE"
+      ],
       "startedAt": "2026-02-23T21:16:00Z",
       "completedAt": "2026-02-23T21:18:00Z",
       "notes": "Repository initialized locally with full structure. GitHub push requires manual authentication."
@@ -37,8 +58,16 @@
       "title": "Build backend API and WebSocket server",
       "agent": "backend",
       "status": "completed",
-      "dependsOn": ["T1", "T2"],
-      "deliverables": ["server/", "websocket handlers", "player matching", "audio storage"],
+      "dependsOn": [
+        "T1",
+        "T2"
+      ],
+      "deliverables": [
+        "server/",
+        "websocket handlers",
+        "player matching",
+        "audio storage"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:30:00Z"
     },
@@ -47,8 +76,14 @@
       "title": "Build React frontend - audio recording",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T1", "T2"],
-      "deliverables": ["client/src/components/AudioRecorder.tsx", "audio capture logic"],
+      "dependsOn": [
+        "T1",
+        "T2"
+      ],
+      "deliverables": [
+        "client/src/components/AudioRecorder.tsx",
+        "audio capture logic"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -57,8 +92,13 @@
       "title": "Build React frontend - GIF picker",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T4"],
-      "deliverables": ["client/src/components/GifPicker.tsx", "Giphy/Tenor API integration"],
+      "dependsOn": [
+        "T4"
+      ],
+      "deliverables": [
+        "client/src/components/GifPicker.tsx",
+        "Giphy/Tenor API integration"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -67,8 +107,12 @@
       "title": "Build React frontend - caption input",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T4"],
-      "deliverables": ["client/src/components/CaptionInput.tsx"],
+      "dependsOn": [
+        "T4"
+      ],
+      "deliverables": [
+        "client/src/components/CaptionInput.tsx"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -77,8 +121,13 @@
       "title": "Build game lobby and room management",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T3"],
-      "deliverables": ["client/src/components/Lobby.tsx", "room creation/joining"],
+      "dependsOn": [
+        "T3"
+      ],
+      "deliverables": [
+        "client/src/components/Lobby.tsx",
+        "room creation/joining"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -87,8 +136,14 @@
       "title": "Build results/voting screen",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T5", "T6"],
-      "deliverables": ["client/src/components/Results.tsx", "voting logic"],
+      "dependsOn": [
+        "T5",
+        "T6"
+      ],
+      "deliverables": [
+        "client/src/components/Results.tsx",
+        "voting logic"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -97,8 +152,14 @@
       "title": "Integrate frontend with backend",
       "agent": "frontend",
       "status": "completed",
-      "dependsOn": ["T3", "T7"],
-      "deliverables": ["Full WebSocket integration", "end-to-end testing"],
+      "dependsOn": [
+        "T3",
+        "T7"
+      ],
+      "deliverables": [
+        "Full WebSocket integration",
+        "end-to-end testing"
+      ],
       "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": "2026-02-23T21:35:00Z"
     },
@@ -107,8 +168,14 @@
       "title": "Local testing and bug fixes",
       "agent": "all",
       "status": "completed",
-      "dependsOn": ["T8", "T9"],
-      "deliverables": ["Working local build", "bug fixes"],
+      "dependsOn": [
+        "T8",
+        "T9"
+      ],
+      "deliverables": [
+        "Working local build",
+        "bug fixes"
+      ],
       "startedAt": "2026-02-23T21:45:00Z",
       "completedAt": "2026-02-23T22:20:00Z",
       "notes": "Fixed TypeScript error in server/src/gameLoop.ts (SanitizedRoom/SanitizedPlayer types). All builds pass. Server runs on port 3001, client on port 5173. TEST_REPORT.md and .env.example files created. Game is fully runnable locally."
@@ -117,11 +184,18 @@
       "id": "T11",
       "title": "VPS deployment setup",
       "agent": "devops",
-      "status": "pending",
-      "dependsOn": ["T10"],
-      "deliverables": ["Docker config", "docker-compose.yml", "deployment scripts"],
-      "startedAt": null,
-      "completedAt": null
+      "status": "completed",
+      "dependsOn": [
+        "T10"
+      ],
+      "deliverables": [
+        "Docker config",
+        "docker-compose.yml",
+        "deployment scripts"
+      ],
+      "startedAt": "2026-02-23T23:04:00Z",
+      "completedAt": null,
+      "assignedTo": "agent:main:subagent:3406bdd5-77b6-4d23-b147-014ff1e466fe"
     }
   ],
   "lastUpdated": "2026-02-23T22:20:00Z"
