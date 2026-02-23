@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install shared dependencies
+        run: |
+          cd shared
+          npm install
+
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: Install client dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: Lint shared
+        run: |
+          cd shared
+          npm run lint || true
+
+      - name: Lint server
+        run: |
+          cd server
+          npm run lint || true
+
+      - name: Lint client
+        run: |
+          cd client
+          npm run lint || true
+
+      - name: Build shared
+        run: |
+          cd shared
+          npm run build
+
+      - name: Build server
+        run: |
+          cd server
+          npm run build
+
+      - name: Build client
+        run: |
+          cd client
+          npm run build
