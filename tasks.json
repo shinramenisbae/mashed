@@ -5,9 +5,9 @@
   "status": "in_progress",
   "repo": "https://github.com/shinramenisbae/mashed",
   "agents": {
-    "design": {"status": "running", "assignedTo": "agent:main:subagent:602b0bb2-6b05-493e-a258-a9edfae7ab5d"},
-    "backend": {"status": "pending", "assignedTo": null},
-    "frontend": {"status": "pending", "assignedTo": null},
+    "design": {"status": "completed", "assignedTo": null},
+    "backend": {"status": "running", "assignedTo": "agent:main:subagent:fd3a49a4-631d-4589-96e2-95f2e8a2dd02"},
+    "frontend": {"status": "running", "assignedTo": "agent:main:subagent:1812cf5d-0a05-4b2c-bff7-3756b2e26c42"},
     "devops": {"status": "completed", "assignedTo": "agent:main:subagent:6e0ba842-7d19-4012-bc47-287641fafc07"}
   },
   "tasks": [
@@ -15,11 +15,11 @@
       "id": "T1",
       "title": "Design game flow and data models",
       "agent": "design",
-      "status": "pending",
+      "status": "completed",
       "dependsOn": [],
-      "deliverables": ["game-flow.md", "data-models.json", "wireframes/"],
-      "startedAt": null,
-      "completedAt": null
+      "deliverables": ["game-flow.md", "data-models.json", "wireframes.md"],
+      "startedAt": "2026-02-23T21:16:00Z",
+      "completedAt": "2026-02-23T21:25:00Z"
     },
     {
       "id": "T2",
@@ -36,70 +36,70 @@
       "id": "T3",
       "title": "Build backend API and WebSocket server",
       "agent": "backend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T1", "T2"],
       "deliverables": ["server/", "websocket handlers", "player matching", "audio storage"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T4",
       "title": "Build React frontend - audio recording",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T1", "T2"],
       "deliverables": ["client/src/components/AudioRecorder.tsx", "audio capture logic"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T5",
       "title": "Build React frontend - GIF picker",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T4"],
       "deliverables": ["client/src/components/GifPicker.tsx", "Giphy/Tenor API integration"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T6",
       "title": "Build React frontend - caption input",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T4"],
       "deliverables": ["client/src/components/CaptionInput.tsx"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T7",
       "title": "Build game lobby and room management",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T3"],
       "deliverables": ["client/src/components/Lobby.tsx", "room creation/joining"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T8",
       "title": "Build results/voting screen",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T5", "T6"],
       "deliverables": ["client/src/components/Results.tsx", "voting logic"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
       "id": "T9",
       "title": "Integrate frontend with backend",
       "agent": "frontend",
-      "status": "pending",
+      "status": "running",
       "dependsOn": ["T3", "T7"],
       "deliverables": ["Full WebSocket integration", "end-to-end testing"],
-      "startedAt": null,
+      "startedAt": "2026-02-23T21:20:00Z",
       "completedAt": null
     },
     {
@@ -123,5 +123,5 @@
       "completedAt": null
     }
   ],
-  "lastUpdated": "2026-02-23T21:18:00Z"
+  "lastUpdated": "2026-02-23T21:25:00Z"
 }

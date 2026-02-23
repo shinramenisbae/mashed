@@ -1,0 +1,590 @@
+{
+  "description": "Data models for Mashed game server and client",
+  "version": "1.0.0",
+  "models": {
+    "Player": {
+      "description": "Represents a connected player in the game",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique UUID generated on connection",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "nickname": {
+          "type": "string",
+          "description": "Display name chosen by player",
+          "maxLength": 20,
+          "example": "SoundMaster99"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Emoji avatar selected by player",
+          "default": "🎮",
+          "example": "🎭"
+        },
+        "socketId": {
+          "type": "string",
+          "description": "Socket.IO connection ID",
+          "example": "socket_abc123"
+        },
+        "roomId": {
+          "type": "string | null",
+          "description": "Current room code or null if not in room",
+          "example": "ABC123"
+        },
+        "isHost": {
+          "type": "boolean",
+          "description": "Whether this player created the room",
+          "default": false
+        },
+        "isReady": {
+          "type": "boolean",
+          "description": "Ready status in lobby",
+          "default": false
+        },
+        "isConnected": {
+          "type": "boolean",
+          "description": "Current connection status",
+          "default": true
+        },
+        "joinedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "When player joined the room",
+          "example": "2026-02-23T21:15:00Z"
+        },
+        "score": {
+          "type": "number",
+          "description": "Current game score",
+          "default": 0
+        },
+        "stats": {
+          "type": "PlayerStats",
+          "description": "Aggregated stats for this game session"
+        }
+      }
+    },
+    "PlayerStats": {
+      "description": "Statistics tracked per player per game",
+      "fields": {
+        "soundsCreated": {
+          "type": "number",
+          "description": "Count of sounds recorded",
+          "default": 0
+        },
+        "captionsWritten": {
+          "type": "number",
+          "description": "Count of captions submitted",
+          "default": 0
+        },
+        "roundsWon": {
+          "type": "number",
+          "description": "Count of rounds with most votes",
+          "default": 0
+        },
+        "votesReceived": {
+          "type": "number",
+          "description": "Total votes received across all rounds",
+          "default": 0
+        },
+        "soundVotesReceived": {
+          "type": "number",
+          "description": "Votes received specifically for sounds created",
+          "default": 0
+        },
+        "bestMisinterpretationVotes": {
+          "type": "number",
+          "description": "Bonus category votes",
+          "default": 0
+        },
+        "madeMeCryLaughVotes": {
+          "type": "number",
+          "description": "Bonus category votes",
+          "default": 0
+        }
+      }
+    },
+    "Room": {
+      "description": "Game room containing players and game state",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "6-character alphanumeric room code",
+          "example": "ABC123"
+        },
+        "hostId": {
+          "type": "string",
+          "description": "Player ID of room creator",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "players": {
+          "type": "Player[]",
+          "description": "Array of connected players"
+        },
+        "status": {
+          "type": "enum",
+          "values": ["waiting", "recording", "matching", "captioning", "results", "voting", "scoring", "finished"],
+          "description": "Current game phase"
+        },
+        "settings": {
+          "type": "GameSettings",
+          "description": "Room configuration"
+        },
+        "currentRound": {
+          "type": "number",
+          "description": "Current round number (1-based)",
+          "default": 0
+        },
+        "totalRounds": {
+          "type": "number",
+          "description": "Total rounds to play",
+          "default": 5
+        },
+        "rounds": {
+          "type": "Round[]",
+          "description": "Completed and current rounds"
+        },
+        "createdAt": {
+          "type": "ISO8601 timestamp",
+          "description": "Room creation time"
+        },
+        "startedAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "Game start time or null if not started"
+        },
+        "endedAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "Game end time or null if not ended"
+        }
+      }
+    },
+    "GameSettings": {
+      "description": "Configurable game parameters",
+      "fields": {
+        "recordingTimeLimit": {
+          "type": "number",
+          "description": "Seconds allowed for recording",
+          "default": 30,
+          "min": 15,
+          "max": 60
+        },
+        "captioningTimeLimit": {
+          "type": "number",
+          "description": "Seconds allowed for GIF selection and captioning",
+          "default": 60,
+          "min": 45,
+          "max": 120
+        },
+        "votingTimeLimit": {
+          "type": "number",
+          "description": "Seconds allowed for voting",
+          "default": 45,
+          "min": 30,
+          "max": 90
+        },
+        "pointsPerVote": {
+          "type": "number",
+          "description": "Points awarded per vote received",
+          "default": 50
+        },
+        "bonusPointsEnabled": {
+          "type": "boolean",
+          "description": "Enable bonus voting categories",
+          "default": true
+        },
+        "roundWinnerBonus": {
+          "type": "number",
+          "description": "Bonus points for most votes in round",
+          "default": 100
+        },
+        "soundMakerVotePoints": {
+          "type": "number",
+          "description": "Points when your sound wins",
+          "default": 25
+        },
+        "participationPoints": {
+          "type": "number",
+          "description": "Points for submitting each round",
+          "default": 10
+        }
+      }
+    },
+    "Round": {
+      "description": "A single round of gameplay",
+      "fields": {
+        "roundNumber": {
+          "type": "number",
+          "description": "Round index (1-based)",
+          "example": 1
+        },
+        "status": {
+          "type": "enum",
+          "values": ["recording", "captioning", "voting", "completed"],
+          "description": "Current round phase"
+        },
+        "soundMakers": {
+          "type": "string[]",
+          "description": "Player IDs assigned as sound makers this round",
+          "example": ["player1", "player2"]
+        },
+        "gifSelectors": {
+          "type": "string[]",
+          "description": "Player IDs assigned as GIF selectors this round",
+          "example": ["player3", "player4"]
+        },
+        "assignments": {
+          "type": "Assignment[]",
+          "description": "Sound maker to GIF selector pairings"
+        },
+        "submissions": {
+          "type": "Submission[]",
+          "description": "Completed submissions for this round"
+        },
+        "startedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "Round start time"
+        },
+        "recordingEndedAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "When recording phase ended"
+        },
+        "captioningEndedAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "When captioning phase ended"
+        },
+        "votingEndedAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "When voting phase ended"
+        }
+      }
+    },
+    "Assignment": {
+      "description": "Pairs a sound maker with a GIF selector",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique assignment ID",
+          "example": "assignment_abc123"
+        },
+        "soundMakerId": {
+          "type": "string",
+          "description": "Player ID who created the sound",
+          "example": "player1"
+        },
+        "gifSelectorId": {
+          "type": "string",
+          "description": "Player ID who selects GIF and caption",
+          "example": "player3"
+        },
+        "roundNumber": {
+          "type": "number",
+          "description": "Which round this assignment belongs to"
+        }
+      }
+    },
+    "Submission": {
+      "description": "A completed sound + GIF + caption combination",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique submission ID",
+          "example": "sub_def456"
+        },
+        "roundNumber": {
+          "type": "number",
+          "description": "Round this submission belongs to"
+        },
+        "assignmentId": {
+          "type": "string",
+          "description": "Reference to the assignment"
+        },
+        "soundMakerId": {
+          "type": "string",
+          "description": "Player who recorded the sound"
+        },
+        "gifSelectorId": {
+          "type": "string",
+          "description": "Player who selected GIF and wrote caption"
+        },
+        "audio": {
+          "type": "AudioData",
+          "description": "Recorded sound information"
+        },
+        "gif": {
+          "type": "GifData",
+          "description": "Selected GIF information"
+        },
+        "caption": {
+          "type": "string",
+          "description": "Written caption text",
+          "maxLength": 140,
+          "example": "When you check your bank account on Monday morning"
+        },
+        "votes": {
+          "type": "Vote[]",
+          "description": "Votes received for this submission"
+        },
+        "reactions": {
+          "type": "Reaction[]",
+          "description": "Emoji reactions from players"
+        },
+        "score": {
+          "type": "number",
+          "description": "Total points earned from this submission",
+          "default": 0
+        },
+        "submittedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "When submission was completed"
+        }
+      }
+    },
+    "AudioData": {
+      "description": "Audio recording metadata",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique audio ID",
+          "example": "audio_ghi789"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to stored audio file",
+          "example": "https://storage.mashed.game/audio/abc123.webm"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Audio duration in seconds",
+          "example": 4.5
+        },
+        "format": {
+          "type": "enum",
+          "values": ["webm", "mp3", "wav"],
+          "description": "Audio file format"
+        },
+        "size": {
+          "type": "number",
+          "description": "File size in bytes"
+        },
+        "recordedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "Recording timestamp"
+        }
+      }
+    },
+    "GifData": {
+      "description": "GIF metadata from external API",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "GIF ID from provider (Giphy/Tenor)",
+          "example": "xT9IgG50Fb7Mi0prBC"
+        },
+        "url": {
+          "type": "string",
+          "description": "Direct GIF URL",
+          "example": "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif"
+        },
+        "previewUrl": {
+          "type": "string",
+          "description": "Static or lower-res preview URL",
+          "example": "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/200w_s.gif"
+        },
+        "source": {
+          "type": "enum",
+          "values": ["giphy", "tenor"],
+          "description": "GIF provider"
+        },
+        "title": {
+          "type": "string",
+          "description": "GIF title/description",
+          "example": "Excited Seal"
+        },
+        "width": {
+          "type": "number",
+          "description": "GIF width in pixels"
+        },
+        "height": {
+          "type": "number",
+          "description": "GIF height in pixels"
+        }
+      }
+    },
+    "Vote": {
+      "description": "A player's vote on a submission",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Unique vote ID"
+        },
+        "playerId": {
+          "type": "string",
+          "description": "Player who cast the vote"
+        },
+        "submissionId": {
+          "type": "string",
+          "description": "Submission being voted for"
+        },
+        "category": {
+          "type": "enum",
+          "values": ["standard", "bestMisinterpretation", "madeMeCryLaugh"],
+          "description": "Voting category"
+        },
+        "points": {
+          "type": "number",
+          "description": "Points this vote contributes",
+          "default": 50
+        },
+        "votedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "Vote timestamp"
+        }
+      }
+    },
+    "Reaction": {
+      "description": "Emoji reaction on a submission",
+      "fields": {
+        "playerId": {
+          "type": "string",
+          "description": "Player who reacted"
+        },
+        "emoji": {
+          "type": "string",
+          "description": "Emoji character",
+          "example": "😂"
+        },
+        "reactedAt": {
+          "type": "ISO8601 timestamp",
+          "description": "Reaction timestamp"
+        }
+      }
+    },
+    "GameState": {
+      "description": "Complete game state sent to clients",
+      "fields": {
+        "room": {
+          "type": "Room",
+          "description": "Current room data"
+        },
+        "currentPlayer": {
+          "type": "Player",
+          "description": "Authenticated player's data"
+        },
+        "phase": {
+          "type": "enum",
+          "values": ["lobby", "recording", "captioning", "results", "voting", "scoring", "gameOver"],
+          "description": "Current game phase"
+        },
+        "phaseEndsAt": {
+          "type": "ISO8601 timestamp | null",
+          "description": "When current phase ends (for timers)"
+        },
+        "myRole": {
+          "type": "enum",
+          "values": ["soundMaker", "gifSelector", "voter", "observer"],
+          "description": "Current player's role this phase"
+        },
+        "myAssignment": {
+          "type": "Assignment | null",
+          "description": "If GIF selector, which sound maker assigned"
+        },
+        "mySubmission": {
+          "type": "Submission | null",
+          "description": "Current player's submission if any"
+        },
+        "currentRoundData": {
+          "type": "Round | null",
+          "description": "Current round details"
+        },
+        "submissionsForVoting": {
+          "type": "Submission[] | null",
+          "description": "Submissions available to vote on"
+        },
+        "hasVoted": {
+          "type": "boolean",
+          "description": "Whether player has voted this round"
+        },
+        "leaderboard": {
+          "type": "LeaderboardEntry[]",
+          "description": "Current standings"
+        }
+      }
+    },
+    "LeaderboardEntry": {
+      "description": "Player ranking entry",
+      "fields": {
+        "rank": {
+          "type": "number",
+          "description": "Current position",
+          "example": 1
+        },
+        "playerId": {
+          "type": "string",
+          "description": "Player ID"
+        },
+        "nickname": {
+          "type": "string",
+          "description": "Player display name"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Player emoji"
+        },
+        "score": {
+          "type": "number",
+          "description": "Total points"
+        },
+        "scoreChange": {
+          "type": "number",
+          "description": "Points gained this round",
+          "example": 150
+        },
+        "isTied": {
+          "type": "boolean",
+          "description": "Whether tied with player above"
+        }
+      }
+    },
+    "WebSocketEvents": {
+      "description": "Socket.IO events for real-time communication",
+      "clientToServer": {
+        "player:join": "Player joins a room",
+        "player:ready": "Player marks ready in lobby",
+        "player:setNickname": "Player updates nickname",
+        "player:setAvatar": "Player updates avatar",
+        "game:start": "Host starts the game",
+        "game:settings": "Host updates game settings",
+        "audio:record": "Upload recorded audio blob",
+        "submission:gifSelect": "Select a GIF for submission",
+        "submission:caption": "Update caption text",
+        "submission:submit": "Finalize submission",
+        "vote:cast": "Cast a vote",
+        "reaction:add": "Add emoji reaction",
+        "game:nextRound": "Host advances to next round",
+        "player:disconnecting": "Player intentionally leaving"
+      },
+      "serverToClient": {
+        "player:joined": "New player joined room",
+        "player:left": "Player disconnected",
+        "player:updated": "Player data changed",
+        "game:state": "Full game state update",
+        "game:phaseChange": "Game phase transitioned",
+        "game:started": "Game has begun",
+        "round:started": "New round started",
+        "round:roleAssigned": "Your role for this round",
+        "round:assignment": "Your sound maker assigned",
+        "audio:received": "Audio available to play",
+        "submission:received": "Someone submitted (anonymous)",
+        "submission:allReceived": "All submissions in, moving to results",
+        "results:revealing": "Starting reveal sequence",
+        "results:submission": "Show specific submission",
+        "voting:started": "Voting phase begun",
+        "vote:received": "Vote recorded",
+        "voting:ended": "Voting complete",
+        "scoring:update": "Score changes animation",
+        "leaderboard:update": "New leaderboard standings",
+        "game:ended": "Game over with final results",
+        "error": "Error message for client"
+      }
+    }
+  }
+}
