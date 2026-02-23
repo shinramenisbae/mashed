@@ -11,7 +11,6 @@ import {
   Scoring,
   GameOver,
   Player,
-  Room,
   Submission,
   LeaderboardEntry,
   theme,
@@ -145,7 +144,8 @@ function App() {
 
   // Initialize socket connection
   useEffect(() => {
-    const newSocket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:3001', {
+    const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
+    const newSocket = io(serverUrl, {
       transports: ['websocket'],
       autoConnect: true,
     });

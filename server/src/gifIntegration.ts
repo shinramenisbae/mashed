@@ -30,8 +30,8 @@ async function searchGiphy(query: string, limit: number = 20): Promise<GifSearch
       throw new Error(`Giphy API error: ${response.status}`);
     }
     
-    const data = await response.json();
-    
+    const data = await response.json() as { data: unknown[] };
+
     return data.data.map((gif: unknown) => {
       const g = gif as {
         id: string;
@@ -64,17 +64,17 @@ async function searchTenor(query: string, limit: number = 20): Promise<GifSearch
     console.warn('TENOR_API_KEY not set');
     return [];
   }
-  
+
   try {
     const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${TENOR_API_KEY}&limit=${limit}&contentfilter=medium`;
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`Tenor API error: ${response.status}`);
     }
-    
-    const data = await response.json();
-    
+
+    const data = await response.json() as { results: unknown[] };
+
     return data.results.map((gif: unknown) => {
       const g = gif as {
         id: string;
@@ -106,17 +106,17 @@ async function getTrendingGiphy(limit: number = 20): Promise<GifSearchResult[]> 
   if (!GIPHY_API_KEY) {
     return getFallbackGifs();
   }
-  
+
   try {
     const url = `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=${limit}&rating=pg-13`;
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`Giphy API error: ${response.status}`);
     }
-    
-    const data = await response.json();
-    
+
+    const data = await response.json() as { data: unknown[] };
+
     return data.data.map((gif: unknown) => {
       const g = gif as {
         id: string;
@@ -148,17 +148,17 @@ async function getTrendingTenor(limit: number = 20): Promise<GifSearchResult[]> 
   if (!TENOR_API_KEY) {
     return [];
   }
-  
+
   try {
     const url = `https://tenor.googleapis.com/v2/featured?key=${TENOR_API_KEY}&limit=${limit}&contentfilter=medium`;
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`Tenor API error: ${response.status}`);
     }
-    
-    const data = await response.json();
-    
+
+    const data = await response.json() as { results: unknown[] };
+
     return data.results.map((gif: unknown) => {
       const g = gif as {
         id: string;

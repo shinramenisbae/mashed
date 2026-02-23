@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { Container, Title, Subtitle, Button, Input, Divider, Card, theme } from './shared';
+import { Subtitle, Button, Input, Divider, Card, theme } from './shared';
 
 const HomeContainer = styled.div`
   display: flex;

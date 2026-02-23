@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
-import { Container, Title, Card, Button, theme, LeaderboardEntry } from './shared';
+import { useState, useEffect } from 'react';
+import { Container, Card, Button, theme, LeaderboardEntry } from './shared';
 
 const confettiAnimation = keyframes`
   0% { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -10,11 +10,6 @@ const confettiAnimation = keyframes`
 const floatAnimation = keyframes`
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
-`;
-
-const shineAnimation = keyframes`
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
 `;
 
 const GameOverContainer = styled.div`

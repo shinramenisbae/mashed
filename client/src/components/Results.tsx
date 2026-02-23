@@ -13,11 +13,6 @@ const revealAnimation = keyframes`
   }
 `;
 
-const typewriterAnimation = keyframes`
-  from { width: 0; }
-  to { width: 100%; }
-`;
-
 const ResultsContainer = styled.div`
   padding-top: 40px;
 `;
@@ -249,8 +244,8 @@ export function Results({
   const [isPlaying, setIsPlaying] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentSubmission = submissions[currentIndex] || MOCK_SUBMISSIONS[currentIndex];
   const totalSubmissions = submissions.length || MOCK_SUBMISSIONS.length;

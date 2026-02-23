@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { Container, Title, Card, Button, Input, Badge, Avatar, Divider, theme, RANDOM_NAMES, AVATAR_OPTIONS, Player } from './shared';
+import { Container, Title, Card, Button, Input, Badge, Avatar, Divider, theme, RANDOM_NAMES, AVATAR_OPTIONS, Player, Subtitle } from './shared';
 
 const Header = styled.div`
   display: flex;

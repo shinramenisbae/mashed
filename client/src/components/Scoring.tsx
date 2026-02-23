@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
-import { Container, Title, Card, Button, theme, LeaderboardEntry, Submission } from './shared';
+import { useState, useEffect } from 'react';
+import { Container, Card, Button, theme, LeaderboardEntry, Submission } from './shared';
 
 const countUpAnimation = keyframes`
   0% { transform: translateY(10px); opacity: 0; }
@@ -43,17 +43,6 @@ const WinnerCard = styled(Card)`
   border: 2px solid rgba(255, 215, 0, 0.3);
   animation: ${glowAnimation} 2s ease-in-out infinite;
   margin-bottom: 32px;
-`;
-
-const TrophyIcon = styled.div`
-  font-size: 64px;
-  margin-bottom: 16px;
-  animation: bounce 1s ease-in-out infinite;
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
 `;
 
 const WinnerGif = styled.div`
@@ -325,7 +314,7 @@ export function Scoring({
       currentStep++;
       const progress = currentStep / steps;
       
-      setAnimatedScores(prev => {
+      setAnimatedScores(_prev => {
         const newScores: Record<string, number> = {};
         displayLeaderboard.forEach(entry => {
           const start = entry.score - entry.scoreChange;

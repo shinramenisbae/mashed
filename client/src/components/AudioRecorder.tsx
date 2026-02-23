@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Container, Title, Card, Button, Timer, theme, useCountdown } from './shared';
+import { Container, Button, Timer, theme, useCountdown } from './shared';
 
 const RecordingContainer = styled.div`
   display: flex;
@@ -224,9 +224,9 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
   const streamRef = useRef<MediaStream | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const recordingStartTimeRef = useRef<number>(0);
-  const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { formatted: timerFormatted, seconds: timerSeconds } = useCountdown(timeLimit);
+  const { formatted: timerFormatted } = useCountdown(timeLimit);
 
   // Rotate tips
   useEffect(() => {

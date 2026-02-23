@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
-import { useState, useEffect } from 'react';
-import { Container, Title, Card, Button, Timer, theme, useCountdown, Submission } from './shared';
+import { useState } from 'react';
+import { Container, Card, Button, Timer, theme, useCountdown, Submission } from './shared';
 
 const pulseAnimation = keyframes`
   0%, 100% { transform: scale(1); }
@@ -236,8 +236,6 @@ interface VotingProps {
 }
 
 export function Voting({
-  roundNumber,
-  totalRounds,
   timeLimit,
   submissions,
   myPlayerId,
@@ -307,7 +305,7 @@ export function Voting({
 
       <VotingContainer>
         <Header>
-          <Title size="small">VOTING</Title>
+          <div style={{ fontSize: '24px', fontWeight: 900, textAlign: 'center', background: theme.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>VOTING</div>
           <div className="subtitle">Pick your favorite match!</div>
         </Header>
 

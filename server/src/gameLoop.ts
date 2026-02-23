@@ -5,20 +5,42 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import type { 
-  Room, 
-  Player, 
+  Room,
   Round, 
   Assignment, 
   Submission,
   AudioData,
   GifData,
-  GamePhase,
   PlayerRole,
   Vote,
   LeaderboardEntry,
   RoomStatus
 } from './types.js';
 import { getRoom, getPlayer } from './roomManager.js';
+
+// Sanitized types for client
+export interface SanitizedPlayer {
+  id: string;
+  nickname: string;
+  avatar: string;
+  isHost: boolean;
+  isReady: boolean;
+  isConnected: boolean;
+  score: number;
+}
+
+export interface SanitizedRoom {
+  id: string;
+  hostId: string;
+  players: SanitizedPlayer[];
+  status: RoomStatus;
+  settings: Room['settings'];
+  currentRound: number;
+  totalRounds: number;
+  createdAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+}
 
 // Active timers for each room
 const roomTimers: Map<string, NodeJS.Timeout> = new Map();
@@ -865,7 +887,7 @@ export function addReaction(
 /**
  * Get sanitized room data (for client)
  */
-export function getSanitizedRoom(room: Room): Partial<Room> {
+export function getSanitizedRoom(room: Room): SanitizedRoom {
   return {
     id: room.id,
     hostId: room.hostId,
@@ -891,13 +913,13 @@ export function getSanitizedRoom(room: Room): Partial<Room> {
 /**
  * Get current game state for a player
  */
-export function getGameState(playerId: string, roomId: string): Partial<Room> | null {
+export function getGameState(playerId: string, roomId: string): SanitizedRoom | null {
   const room = getRoom(roomId);
   const player = getPlayer(playerId);
-  
+
   if (!room || !player) {
     return null;
   }
-  
+
   return getSanitizedRoom(room);
 }

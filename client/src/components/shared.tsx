@@ -167,7 +167,7 @@ export const Input = styled.input`
   }
 `;
 
-export const Title = styled.h1`
+export const Title = styled.h1<{ size?: 'small' | 'large' }>`
   font-size: ${props => props.size === 'small' ? '24px' : props.size === 'large' ? '48px' : '36px'};
   font-weight: 900;
   text-align: center;
@@ -294,7 +294,7 @@ export const Divider = styled.div`
 // Utility hook for countdown timer
 export function useCountdown(initialSeconds: number, onComplete?: () => void) {
   const [seconds, setSeconds] = useState(initialSeconds);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setSeconds(initialSeconds);

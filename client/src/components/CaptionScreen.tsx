@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Container, Title, Card, Button, Input, Timer, theme, useCountdown } from './shared';
+import { useState, useEffect, useRef } from 'react';
+import { Container, Card, Button, Input, Timer, theme, useCountdown } from './shared';
 
 const CaptionContainer = styled.div`
   padding-top: 60px;
@@ -266,8 +266,15 @@ const CATEGORIES = [
   'excited', 'dramatic', 'animals', 'reactions', 'vibes'
 ];
 
+interface GifItem {
+  id: string;
+  url: string;
+  emoji: string;
+  title: string;
+}
+
 // Mock GIF data - in real app, fetch from Giphy/Tenor API
-const MOCK_GIFS = [
+const MOCK_GIFS: GifItem[] = [
   { id: '1', url: '', emoji: '🦭', title: 'Excited Seal' },
   { id: '2', url: '', emoji: '🐱', title: 'Confused Cat' },
   { id: '3', url: '', emoji: '🐶', title: 'Happy Dog' },
@@ -297,14 +304,14 @@ export function CaptionScreen({
   onSubmit 
 }: CaptionScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGif, setSelectedGif] = useState<typeof MOCK_GIFS[0] | null>(null);
+  const [selectedGif, setSelectedGif] = useState<GifItem | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [gifs, setGifs] = useState(MOCK_GIFS);
+  const [gifs, setGifs] = useState<GifItem[]>(MOCK_GIFS);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { formatted: timerFormatted } = useCountdown(timeLimit, () => {
     if (selectedGif && caption.trim()) {
@@ -367,7 +374,7 @@ export function CaptionScreen({
 
   const handleSubmit = () => {
     if (selectedGif && caption.trim()) {
-      onSubmit(selectedGif.id, selectedGif.url, caption);
+      onSubmit(selectedGif.id || '', selectedGif.url || '', caption);
     }
   };
 
@@ -379,7 +386,7 @@ export function CaptionScreen({
       
       <div style={{ marginTop: '60px', textAlign: 'center', marginBottom: '20px' }}>
         <span style={{ color: theme.gray, fontSize: '14px' }}>Round {roundNumber} of {totalRounds}</span>
-        <Title size="small">🎨 CREATE THE PERFECT MATCH</Title>
+        <div style={{ fontSize: '24px', fontWeight: 900, textAlign: 'center', marginTop: '8px', background: theme.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>🎨 CREATE THE PERFECT MATCH</div>
       </div>
 
       <CaptionContainer>
@@ -437,10 +444,10 @@ export function CaptionScreen({
             </CategoryChips>
 
             <GifResultsGrid>
-              {gifs.map(gif => (
+              {gifs.map((gif: GifItem) => (
                 <GifItem
                   key={gif.id}
-                  selected={selectedGif?.id === gif.id}
+                  selected={Boolean(selectedGif) && (selectedGif as GifItem | null)?.id === gif.id}
                   onClick={() => setSelectedGif(gif)}
                 >
                   <div className="placeholder">{gif.emoji}</div>

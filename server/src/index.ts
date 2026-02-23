@@ -8,18 +8,12 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-
-import type { 
-  Player, 
-  Room,
+import type {
   GameState,
   CreateRoomPayload,
   JoinRoomPayload,
   UpdateSettingsPayload,
-  AudioRecordPayload,
   GifData,
-  CaptionPayload,
   VotePayload,
   ReactionPayload
 } from './types.js';
@@ -54,7 +48,6 @@ import {
 import {
   searchGifs,
   getTrendingGifs,
-  toGifData,
   isGifApiConfigured,
 } from './gifIntegration.js';
 
@@ -69,7 +62,6 @@ import {
   addReaction,
   getSanitizedRoom,
   getLeaderboard,
-  getGameState,
 } from './gameLoop.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -621,7 +613,7 @@ io.on('connection', (socket) => {
         return;
       }
       
-      const gameState: Partial<GameState> = {
+      const gameState = {
         room: getSanitizedRoom(room),
         currentPlayer: player,
         phase: room.status as GameState['phase'],
