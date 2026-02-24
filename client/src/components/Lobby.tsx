@@ -179,8 +179,23 @@ export function Lobby({
   const readyPlayers = players.filter(p => p.isReady).length;
   const canStart = isHost && readyPlayers === players.length && players.length >= 2;
 
+  const copyToClipboard = (text: string) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  };
+
   const copyRoomCode = () => {
-    navigator.clipboard.writeText(roomCode);
+    copyToClipboard(roomCode);
   };
 
   const updateSetting = (key: string, delta: number, min: number, max: number) => {

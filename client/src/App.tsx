@@ -275,11 +275,11 @@ function App() {
   }, [socket]);
 
   const handleNicknameChange = useCallback((nickname: string) => {
-    socket?.emit('player:setNickname', { nickname });
+    socket?.emit('player:nickname', nickname);
   }, [socket]);
 
   const handleAvatarChange = useCallback((avatar: string) => {
-    socket?.emit('player:setAvatar', { avatar });
+    socket?.emit('player:avatar', avatar);
   }, [socket]);
 
   const handleAudioSubmit = useCallback((audioBlob: Blob, duration: number) => {

@@ -196,7 +196,23 @@
       "startedAt": "2026-02-23T23:04:00Z",
       "completedAt": null,
       "assignedTo": "agent:main:subagent:3406bdd5-77b6-4d23-b147-014ff1e466fe"
+    },
+    {
+      "id": "T12",
+      "title": "Bug fixes",
+      "agent": "bugfix",
+      "status": "completed",
+      "dependsOn": ["T11"],
+      "deliverables": [
+        "Room code length fix (4-char consistent)",
+        "Create room flow with nickname/avatar picker",
+        "Emoji font CSS fix",
+        "Host vs joiner header text",
+        "Lobby transition flow fix"
+      ],
+      "startedAt": "2026-02-24T01:36:00Z",
+      "completedAt": "2026-02-24T01:40:00Z"
     }
   ],
-  "lastUpdated": "2026-02-23T22:20:00Z"
+  "lastUpdated": "2026-02-24T01:40:00Z"
 }

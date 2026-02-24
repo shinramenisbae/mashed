@@ -132,14 +132,16 @@ export function joinRoom(payload: JoinRoomPayload, socketId: string): { room: Ro
     throw new Error('Room is full (max 8 players)');
   }
   
-  // Check for duplicate nickname
-  const normalizedNickname = payload.nickname.trim().toLowerCase();
-  const existingPlayer = room.players.find(
-    p => p.nickname.trim().toLowerCase() === normalizedNickname && p.isConnected
-  );
-  
-  if (existingPlayer) {
-    throw new Error('Nickname already taken in this room');
+  // Check for duplicate nickname (if provided)
+  const normalizedNickname = (payload.nickname || '').trim().toLowerCase();
+  if (normalizedNickname) {
+    const existingPlayer = room.players.find(
+      p => p.nickname.trim().toLowerCase() === normalizedNickname && p.isConnected
+    );
+    
+    if (existingPlayer) {
+      throw new Error('Nickname already taken in this room');
+    }
   }
   
   const playerId = uuidv4();
