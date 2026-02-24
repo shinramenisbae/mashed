@@ -174,11 +174,49 @@ function App() {
       setCurrentRound(state.room?.currentRound || 1);
       setTotalRounds(state.room?.totalRounds || 5);
       setSettings(state.room?.settings || settings);
-      
+
       // Update phase based on server state
       const serverPhase = state.phase;
       if (serverPhase && serverPhase !== phase) {
         setPhase(serverPhase);
+      }
+    });
+
+    // Room state updates (when players join/leave)
+    newSocket.on('room:updated', (data) => {
+      if (data.room?.players) {
+        setPlayers(data.room.players);
+      }
+    });
+
+    // Player joined - add to players list
+    newSocket.on('player:joined', (data) => {
+      if (data.player) {
+        setPlayers(prev => {
+          // Avoid duplicates
+          const exists = prev.find(p => p.id === data.player.id);
+          if (exists) return prev;
+          return [...prev, data.player];
+        });
+      }
+    });
+
+    // Player left - remove from players list
+    newSocket.on('player:left', (data) => {
+      if (data.playerId) {
+        setPlayers(prev => prev.filter(p => p.id !== data.playerId));
+      }
+    });
+
+    // Player updated (ready status, nickname, avatar)
+    newSocket.on('player:updated', (data) => {
+      if (data.playerId) {
+        setPlayers(prev => prev.map(p => {
+          if (p.id === data.playerId) {
+            return { ...p, ...data };
+          }
+          return p;
+        }));
       }
     });
 
@@ -234,24 +272,32 @@ function App() {
 
   // Actions
   const handleCreateRoom = useCallback(() => {
-    socket?.emit('room:create', {}, (response: { roomCode: string; error?: string }) => {
+    socket?.emit('room:create', {}, (response: { roomCode: string; room?: { players?: Player[] }; error?: string }) => {
       if (response.error) {
         setError(response.error);
       } else {
         setRoomCode(response.roomCode);
         setIsHost(true);
+        // Set players from response if available
+        if (response.room?.players) {
+          setPlayers(response.room.players);
+        }
         setPhase('joining');
       }
     });
   }, [socket]);
 
   const handleJoinRoom = useCallback((code: string) => {
-    socket?.emit('room:join', { roomCode: code }, (response: { success: boolean; error?: string }) => {
+    socket?.emit('room:join', { roomCode: code }, (response: { success: boolean; room?: { players?: Player[] }; error?: string }) => {
       if (response.error) {
         setError(response.error);
       } else {
         setRoomCode(code);
         setIsHost(false);
+        // Set players from response if available
+        if (response.room?.players) {
+          setPlayers(response.room.players);
+        }
         setPhase('joining');
       }
     });
@@ -262,8 +308,11 @@ function App() {
   }, []);
 
   const handleReady = useCallback(() => {
-    socket?.emit('player:ready');
-  }, [socket]);
+    // Find current player and toggle ready state
+    const currentPlayer = players.find(p => p.id === currentPlayerId);
+    const newReadyState = !(currentPlayer?.isReady ?? false);
+    socket?.emit('player:ready', newReadyState);
+  }, [socket, players, currentPlayerId]);
 
   const handleStartGame = useCallback(() => {
     socket?.emit('game:start');

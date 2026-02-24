@@ -238,17 +238,22 @@ io.on('connection', (socket) => {
   socket.on('room:create', (payload: CreateRoomPayload, callback) => {
     try {
       const { room, player } = createRoom(payload, socket.id);
-      
+
       socket.join(room.id);
       socketToPlayer.set(socket.id, { playerId: player.id, roomId: room.id });
-      
+
+      // Emit room state to the creator
+      socket.emit('room:updated', {
+        room: getSanitizedRoom(room),
+      });
+
       callback({
         success: true,
         room: getSanitizedRoom(room),
         playerId: player.id,
         roomCode: room.id,
       });
-      
+
       console.log(`Room created: ${room.id} by ${player.nickname}`);
     } catch (error) {
       callback({
@@ -262,11 +267,16 @@ io.on('connection', (socket) => {
   socket.on('room:join', (payload: JoinRoomPayload, callback) => {
     try {
       const { room, player } = joinRoom(payload, socket.id);
-      
+
       socket.join(room.id);
       socketToPlayer.set(socket.id, { playerId: player.id, roomId: room.id });
-      
-      // Notify other players
+
+      // Emit full room state to ALL players in the room (including the new player)
+      io.to(room.id).emit('room:updated', {
+        room: getSanitizedRoom(room),
+      });
+
+      // Also emit player:joined for individual player updates
       socket.to(room.id).emit('player:joined', {
         player: {
           id: player.id,
@@ -277,13 +287,13 @@ io.on('connection', (socket) => {
           score: player.score,
         },
       });
-      
+
       callback({
         success: true,
         room: getSanitizedRoom(room),
         playerId: player.id,
       });
-      
+
       console.log(`Player ${player.nickname} joined room ${room.id}`);
     } catch (error) {
       callback({

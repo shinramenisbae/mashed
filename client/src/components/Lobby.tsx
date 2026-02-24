@@ -249,9 +249,9 @@ export function Lobby({
       {!isHost && (
         <Button 
           onClick={onReady}
-          variant={currentPlayer?.isReady ? 'outline' : 'primary'}
+          variant={currentPlayer?.isReady ? 'secondary' : 'primary'}
         >
-          {currentPlayer?.isReady ? '❌ Cancel Ready' : "✅ I'm Ready!"}
+          {currentPlayer?.isReady ? "✅ I'M READY" : "🚀 I'M READY"}
         </Button>
       )}
 
@@ -261,11 +261,14 @@ export function Lobby({
             onClick={onStart}
             disabled={!canStart}
           >
-            {canStart ? '🚀 Start Game' : `Waiting for ${players.length - readyPlayers} more...`}
+            {players.length >= 4 
+              ? (canStart ? '🚀 START GAME' : `WAITING FOR ${players.length - readyPlayers} MORE...`) 
+              : `WAITING FOR ${4 - players.length} MORE...`}
           </Button>
           
           <WaitingText>
-            {readyPlayers < players.length && `Waiting for ${players.length - readyPlayers} players`}
+            {readyPlayers < players.length && `Waiting for ${players.length - readyPlayers} players to be ready`}
+            {readyPlayers === players.length && players.length < 4 && `Need ${4 - players.length} more player${4 - players.length === 1 ? '' : 's'} to start`}
             <span className="dots"></span>
           </WaitingText>
         </>
