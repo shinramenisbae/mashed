@@ -144,7 +144,7 @@ function App() {
 
   // Initialize socket connection
   useEffect(() => {
-    const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
+    const serverUrl = (import.meta as any).env?.VITE_SERVER_URL || window.location.origin;
     const newSocket = io(serverUrl, {
       transports: ['websocket'],
       autoConnect: true,

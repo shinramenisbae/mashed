@@ -5,7 +5,7 @@ services:
     build: .
     container_name: mashed-game
     ports:
-      - "80:3001"
+      - "4000:3001"
     volumes:
       - uploads:/app/uploads
     env_file:
