@@ -76,11 +76,13 @@ export function createRoom(payload: CreateRoomPayload, socketId: string): { room
   const roomCode = generateUniqueRoomCode();
   const playerId = uuidv4();
   const now = new Date().toISOString();
+  const defaultNicknames = ['Viber', 'Bestie', 'Slay', 'NPC', 'Goat', 'Legend', 'Chaos', 'Menace', 'Icon', 'MainChar'];
+  const randomNick = defaultNicknames[Math.floor(Math.random() * defaultNicknames.length)] + Math.floor(Math.random() * 100);
   
   const player: Player = {
     id: playerId,
-    nickname: payload.nickname.slice(0, 20),
-    avatar: payload.avatar || '🎮',
+    nickname: (payload?.nickname || randomNick).slice(0, 20),
+    avatar: payload?.avatar || '🎮',
     socketId,
     roomId: roomCode,
     isHost: true,
@@ -142,11 +144,13 @@ export function joinRoom(payload: JoinRoomPayload, socketId: string): { room: Ro
   
   const playerId = uuidv4();
   const now = new Date().toISOString();
+  const joinNicknames = ['Viber', 'Bestie', 'Slay', 'NPC', 'Goat', 'Legend', 'Chaos', 'Menace', 'Icon', 'MainChar'];
+  const randomJoinNick = joinNicknames[Math.floor(Math.random() * joinNicknames.length)] + Math.floor(Math.random() * 100);
   
   const player: Player = {
     id: playerId,
-    nickname: payload.nickname.slice(0, 20),
-    avatar: payload.avatar || '🎮',
+    nickname: (payload?.nickname || randomJoinNick).slice(0, 20),
+    avatar: payload?.avatar || '🎮',
     socketId,
     roomId: roomCode,
     isHost: false,
