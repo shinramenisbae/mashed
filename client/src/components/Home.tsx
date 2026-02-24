@@ -148,12 +148,12 @@ export function Home({ onCreateRoom, onJoinRoom, error }: HomeProps) {
   const [showJoin, setShowJoin] = useState(false);
 
   const handleRoomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
     setRoomCode(value);
   };
 
   const handleJoin = () => {
-    if (roomCode.length === 6) {
+    if (roomCode.length === 4) {
       onJoinRoom(roomCode);
     }
   };
@@ -188,18 +188,18 @@ export function Home({ onCreateRoom, onJoinRoom, error }: HomeProps) {
             <Subtitle>Enter Room Code</Subtitle>
             <RoomCodeInput
               type="text"
-              placeholder="______"
+              placeholder="____"
               value={roomCode}
               onChange={handleRoomCodeChange}
               autoFocus
-              maxLength={6}
+              maxLength={4}
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
           </Card>
 
           <Button 
             onClick={handleJoin}
-            disabled={roomCode.length !== 6}
+            disabled={roomCode.length !== 4}
           >
             🚀 Join Room
           </Button>

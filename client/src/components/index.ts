@@ -1,5 +1,6 @@
 export { Home } from './Home';
 export { Lobby } from './Lobby';
+export { JoiningRoom } from './JoiningRoom';
 export { AudioRecorder } from './AudioRecorder';
 export { CaptionScreen } from './CaptionScreen';
 export { Results } from './Results';

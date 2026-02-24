@@ -4,6 +4,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import {
   Home,
   Lobby,
+  JoiningRoom,
   AudioRecorder,
   CaptionScreen,
   Results,
@@ -24,7 +25,7 @@ const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
     background: ${theme.dark};
     color: ${theme.light};
     min-height: 100vh;
@@ -106,6 +107,7 @@ const ErrorToast = styled.div`
 // Game phases
 type GamePhase = 
   | 'home' 
+  | 'joining'
   | 'lobby' 
   | 'recording' 
   | 'captioning' 
@@ -237,7 +239,8 @@ function App() {
         setError(response.error);
       } else {
         setRoomCode(response.roomCode);
-        setPhase('lobby');
+        setIsHost(true);
+        setPhase('joining');
       }
     });
   }, [socket]);
@@ -248,10 +251,15 @@ function App() {
         setError(response.error);
       } else {
         setRoomCode(code);
-        setPhase('lobby');
+        setIsHost(false);
+        setPhase('joining');
       }
     });
   }, [socket]);
+
+  const handleEnterRoom = useCallback(() => {
+    setPhase('lobby');
+  }, []);
 
   const handleReady = useCallback(() => {
     socket?.emit('player:ready');
@@ -313,6 +321,17 @@ function App() {
             onCreateRoom={handleCreateRoom}
             onJoinRoom={handleJoinRoom}
             error={error || undefined}
+          />
+        );
+
+      case 'joining':
+        return (
+          <JoiningRoom
+            roomCode={roomCode}
+            isHost={isHost}
+            onEnterRoom={handleEnterRoom}
+            onNicknameChange={handleNicknameChange}
+            onAvatarChange={handleAvatarChange}
           />
         );
 
