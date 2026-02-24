@@ -246,20 +246,19 @@ export function Lobby({
         </Card>
       </PlayerList>
 
-      {!isHost && (
-        <Button 
-          onClick={onReady}
-          variant={currentPlayer?.isReady ? 'secondary' : 'primary'}
-        >
-          {currentPlayer?.isReady ? "✅ I'M READY" : "🚀 I'M READY"}
-        </Button>
-      )}
+      <Button 
+        onClick={onReady}
+        variant={currentPlayer?.isReady ? 'secondary' : 'primary'}
+      >
+        {currentPlayer?.isReady ? "✅ READY" : "🚀 I'M READY"}
+      </Button>
 
       {isHost && (
         <>
           <Button 
             onClick={onStart}
             disabled={!canStart}
+            style={{ marginTop: '12px' }}
           >
             {players.length >= 4 
               ? (canStart ? '🚀 START GAME' : `WAITING FOR ${players.length - readyPlayers} MORE...`) 
