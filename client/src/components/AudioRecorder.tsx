@@ -193,6 +193,61 @@ const AudioProgress = styled.div`
   }
 `;
 
+const SOUND_EFFECTS = [
+  { emoji: '🎺', name: 'Trumpet', freq: 523, type: 'square' as OscillatorType },
+  { emoji: '🥁', name: 'Drum', freq: 150, type: 'sawtooth' as OscillatorType },
+  { emoji: '🎸', name: 'Guitar', freq: 330, type: 'triangle' as OscillatorType },
+  { emoji: '🔔', name: 'Bell', freq: 880, type: 'sine' as OscillatorType },
+  { emoji: '👾', name: 'Retro', freq: 440, type: 'square' as OscillatorType },
+  { emoji: '🚨', name: 'Siren', freq: 660, type: 'sawtooth' as OscillatorType },
+  { emoji: '🐱', name: 'Meow', freq: 700, type: 'triangle' as OscillatorType },
+  { emoji: '💥', name: 'Boom', freq: 80, type: 'sawtooth' as OscillatorType },
+  { emoji: '🎵', name: 'Melody', freq: 392, type: 'sine' as OscillatorType },
+];
+
+const SoundEffectGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 24px 0;
+`;
+
+const SoundEffectButton = styled.button<{ selected?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  border-radius: 16px;
+  border: 2px solid ${props => props.selected ? theme.primary : 'rgba(255, 255, 255, 0.1)'};
+  background: ${props => props.selected ? 'rgba(255, 0, 80, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+  color: ${theme.light};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 36px;
+  
+  .name {
+    font-size: 12px;
+    color: ${theme.gray};
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+const MicWarning = styled.div`
+  background: rgba(255, 165, 0, 0.15);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #ffa500;
+`;
+
 const SOUND_TIPS = [
   'Beatbox', 'Impressions', 'Nonsense words', 
   'Sound effects', 'Animal noises', 'Whistling',
@@ -216,6 +271,8 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackProgress, setPlaybackProgress] = useState(0);
   const [currentTip, setCurrentTip] = useState(0);
+  const [micAvailable, setMicAvailable] = useState(true);
+  const [micError, setMicError] = useState('');
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -227,6 +284,19 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { formatted: timerFormatted } = useCountdown(timeLimit);
+
+  // Check mic availability
+  useEffect(() => {
+    const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setMicAvailable(false);
+      setMicError(isSecure ? 'Microphone API not available in this browser.' : 'Microphone requires HTTPS. Use the sound effect picker below instead!');
+    } else if (!isSecure) {
+      // Some browsers block getUserMedia on HTTP even if the API exists
+      setMicAvailable(false);
+      setMicError('Microphone requires HTTPS. Use the sound effect picker below instead!');
+    }
+  }, []);
 
   // Rotate tips
   useEffect(() => {
@@ -257,6 +327,7 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
   }, []);
 
   const startRecording = async () => {
+    if (!micAvailable) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -322,7 +393,8 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
       
     } catch (err) {
       console.error('Error starting recording:', err);
-      alert('Could not access microphone. Please check permissions.');
+      setMicAvailable(false);
+      setMicError('Could not access microphone. Please check permissions or use the sound effect picker below.');
     }
   };
 
@@ -374,6 +446,70 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
     }
   };
 
+  const generateSoundEffect = async (effect: typeof SOUND_EFFECTS[0]) => {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const duration = 3.5;
+    const sampleRate = ctx.sampleRate;
+    const buffer = ctx.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Generate a fun sound pattern
+    for (let i = 0; i < data.length; i++) {
+      const t = i / sampleRate;
+      const freqMod = effect.freq * (1 + 0.3 * Math.sin(t * 5));
+      let sample = 0;
+      switch (effect.type) {
+        case 'sine': sample = Math.sin(2 * Math.PI * freqMod * t); break;
+        case 'square': sample = Math.sin(2 * Math.PI * freqMod * t) > 0 ? 0.5 : -0.5; break;
+        case 'sawtooth': sample = 2 * ((freqMod * t) % 1) - 1; break;
+        case 'triangle': sample = Math.abs(4 * ((freqMod * t) % 1) - 2) - 1; break;
+      }
+      // Envelope
+      const env = Math.min(1, t * 10) * Math.max(0, 1 - (t - duration + 0.5) * 2);
+      data[i] = sample * env * 0.5;
+    }
+
+    // Encode to WAV
+    const numChannels = 1;
+    const bitsPerSample = 16;
+    const wavBuffer = new ArrayBuffer(44 + data.length * 2);
+    const view = new DataView(wavBuffer);
+    const writeStr = (offset: number, str: string) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + data.length * 2, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numChannels * bitsPerSample / 8, true);
+    view.setUint16(32, numChannels * bitsPerSample / 8, true);
+    view.setUint16(34, bitsPerSample, true);
+    writeStr(36, 'data');
+    view.setUint32(40, data.length * 2, true);
+    for (let i = 0; i < data.length; i++) {
+      const s = Math.max(-1, Math.min(1, data[i]));
+      view.setInt16(44 + i * 2, s * 0x7FFF, true);
+    }
+
+    const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+    setAudioBlob(blob);
+    setAudioDuration(duration);
+    setHasRecorded(true);
+
+    // Play preview
+    const audioUrl = URL.createObjectURL(blob);
+    const audio = new Audio(audioUrl);
+    audioElementRef.current = audio;
+    audio.addEventListener('timeupdate', () => setPlaybackProgress((audio.currentTime / audio.duration) * 100));
+    audio.addEventListener('ended', () => { setIsPlaying(false); setPlaybackProgress(0); });
+    audio.play();
+    setIsPlaying(true);
+
+    await ctx.close();
+  };
+
   const handleSubmit = () => {
     if (audioBlob && audioDuration >= 3) {
       onSubmit(audioBlob, audioDuration);
@@ -394,55 +530,76 @@ export function AudioRecorder({ roundNumber, totalRounds, timeLimit, onSubmit }:
             <RoleBanner>
               <div className="icon">🎤</div>
               <div className="text">YOUR TURN!</div>
-              <div className="subtext">Make a sound. Any sound.</div>
+              <div className="subtext">{micAvailable ? 'Make a sound. Any sound.' : 'Pick a sound effect!'}</div>
             </RoleBanner>
 
-            <WaveformContainer isRecording={isRecording}>
-              <WaveformBars isRecording={isRecording}>
-                {isRecording ? (
-                  audioData.map((height, i) => (
-                    <div 
-                      key={i} 
-                      className="bar" 
-                      style={{ height: `${height}px` }}
-                    />
-                  ))
-                ) : (
-                  <span className="placeholder">Tap to start recording</span>
-                )}
-              </WaveformBars>
-              {isRecording && (
-                <DurationDisplay>
-                  ◉ REC ({recordingDuration.toFixed(1)}s)
-                </DurationDisplay>
-              )}
-            </WaveformContainer>
+            {!micAvailable && (
+              <>
+                <MicWarning>⚠️ {micError}</MicWarning>
+                <SoundEffectGrid>
+                  {SOUND_EFFECTS.map((effect) => (
+                    <SoundEffectButton
+                      key={effect.name}
+                      onClick={() => generateSoundEffect(effect)}
+                    >
+                      {effect.emoji}
+                      <span className="name">{effect.name}</span>
+                    </SoundEffectButton>
+                  ))}
+                </SoundEffectGrid>
+              </>
+            )}
 
-            <RecordButton 
-              isRecording={isRecording}
-              onClick={isRecording ? stopRecording : startRecording}
-            >
-              {isRecording ? '⏹️' : '🎙️'}
-            </RecordButton>
+            {micAvailable && (
+              <>
+                <WaveformContainer isRecording={isRecording}>
+                  <WaveformBars isRecording={isRecording}>
+                    {isRecording ? (
+                      audioData.map((height, i) => (
+                        <div 
+                          key={i} 
+                          className="bar" 
+                          style={{ height: `${height}px` }}
+                        />
+                      ))
+                    ) : (
+                      <span className="placeholder">Tap to start recording</span>
+                    )}
+                  </WaveformBars>
+                  {isRecording && (
+                    <DurationDisplay>
+                      ◉ REC ({recordingDuration.toFixed(1)}s)
+                    </DurationDisplay>
+                  )}
+                </WaveformContainer>
 
-            <TipsContainer>
-              <div className="label">Try these</div>
-              <div className="tips">
-                {SOUND_TIPS.map((tip, i) => (
-                  <span 
-                    key={tip}
-                    className="tip"
-                    style={{ 
-                      opacity: i === currentTip ? 1 : 0.5,
-                      transform: i === currentTip ? 'scale(1.05)' : 'scale(1)',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {tip}
-                  </span>
-                ))}
-              </div>
-            </TipsContainer>
+                <RecordButton 
+                  isRecording={isRecording}
+                  onClick={isRecording ? stopRecording : startRecording}
+                >
+                  {isRecording ? '⏹️' : '🎙️'}
+                </RecordButton>
+
+                <TipsContainer>
+                  <div className="label">Try these</div>
+                  <div className="tips">
+                    {SOUND_TIPS.map((tip, i) => (
+                      <span 
+                        key={tip}
+                        className="tip"
+                        style={{ 
+                          opacity: i === currentTip ? 1 : 0.5,
+                          transform: i === currentTip ? 'scale(1.05)' : 'scale(1)',
+                          transition: 'all 0.3s ease'
+                        }}
+                      >
+                        {tip}
+                      </span>
+                    ))}
+                  </div>
+                </TipsContainer>
+              </>
+            )}
           </>
         ) : (
           <>

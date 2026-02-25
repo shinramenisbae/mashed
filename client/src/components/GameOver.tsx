@@ -289,7 +289,8 @@ const ButtonRow = styled.div`
 
 const CONFEETI_COLORS = ['#FF0050', '#00F2EA', '#FFD700', '#8B5CF6', '#EC4899'];
 
-const MOCK_LEADERBOARD: LeaderboardEntry[] = [
+// @ts-ignore
+const _MOCK_LEADERBOARD: LeaderboardEntry[] = [
   { rank: 1, playerId: '1', nickname: 'SoundNinja', avatar: '🎭', score: 1240, scoreChange: 0 },
   { rank: 2, playerId: '2', nickname: 'GifMaster', avatar: '🎸', score: 1080, scoreChange: 0 },
   { rank: 3, playerId: '3', nickname: 'NoisyPenguin', avatar: '🎪', score: 920, scoreChange: 0 },
@@ -298,7 +299,8 @@ const MOCK_LEADERBOARD: LeaderboardEntry[] = [
   { rank: 6, playerId: '6', nickname: 'SoundNinja2', avatar: '🎲', score: 640, scoreChange: 0 },
 ];
 
-const MOCK_AWARDS = [
+// @ts-ignore
+const _MOCK_AWARDS = [
   { emoji: '🎭', category: 'Best Actor', winner: 'SoundNinja' },
   { emoji: '🎨', category: 'Most Creative', winner: 'MemeLord' },
   { emoji: '😂', category: 'Comedian', winner: 'GifMaster' },
@@ -342,11 +344,11 @@ export function GameOver({
   const [showConfetti, setShowConfetti] = useState(true);
   const [confettiPieces, setConfettiPieces] = useState<{ id: number; delay: number; color: string; left: number }[]>([]);
   
-  const displayLeaderboard = leaderboard.length > 0 ? leaderboard : MOCK_LEADERBOARD;
-  const displayAwards = awards.length > 0 ? awards : MOCK_AWARDS;
+  const displayLeaderboard = leaderboard.length > 0 ? leaderboard : [];
+  const displayAwards = awards.length > 0 ? awards : [];
   const displayStats = stats.totalSounds ? stats : MOCK_STATS;
   
-  const winner = displayLeaderboard[0];
+  const winner = displayLeaderboard[0] || { playerId: '', nickname: 'Nobody', avatar: '❓', score: 0, rank: 1, scoreChange: 0 };
   const isWinner = winner.playerId === myPlayerId;
   const myEntry = displayLeaderboard.find(p => p.playerId === myPlayerId);
 

@@ -143,6 +143,7 @@ function App() {
   const [currentAudio, setCurrentAudio] = useState<{ url: string; duration: number }>({ url: '', duration: 0 });
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [votesCast, setVotesCast] = useState(0);
+  const [currentAssignmentId, setCurrentAssignmentId] = useState('');
 
   // Initialize socket connection
   useEffect(() => {
@@ -229,9 +230,15 @@ function App() {
 
     newSocket.on('round:started', (data) => {
       setPhase(data.role === 'soundMaker' ? 'recording' : 'captioning');
+      if (data.assignment?.id) {
+        setCurrentAssignmentId(data.assignment.id);
+      }
     });
 
     newSocket.on('round:assignment', (data) => {
+      if (data.assignmentId) {
+        setCurrentAssignmentId(data.assignmentId);
+      }
       if (data.audio) {
         setCurrentAudio({
           url: data.audio.url,
@@ -336,9 +343,16 @@ function App() {
     // Show waiting screen or move to next phase
   }, [socket]);
 
-  const handleCaptionSubmit = useCallback((gifId: string, gifUrl: string, caption: string) => {
-    socket?.emit('submission:submit', { gifId, gifUrl, caption });
-  }, [socket]);
+  const handleCaptionSubmit = useCallback((_gifId: string, _gifUrl: string, caption: string) => {
+    if (!currentAssignmentId) {
+      console.error('No assignment ID available');
+      return;
+    }
+    // First submit the caption
+    socket?.emit('submission:caption', { assignmentId: currentAssignmentId, caption });
+    // Then finalize the submission
+    socket?.emit('submission:submit', { assignmentId: currentAssignmentId });
+  }, [socket, currentAssignmentId]);
 
   const handleVote = useCallback((submissionId: string, bonusVotes?: { bestMisinterpretation?: string; madeMeCryLaugh?: string }) => {
     socket?.emit('vote:cast', { submissionId, bonusVotes });

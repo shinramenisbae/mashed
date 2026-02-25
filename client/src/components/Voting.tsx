@@ -187,7 +187,8 @@ const VoteStatus = styled.div`
   }
 `;
 
-const MOCK_SUBMISSIONS: Submission[] = [
+// @ts-ignore
+const _MOCK_SUBMISSIONS: Submission[] = [
   {
     id: '1',
     audioUrl: '',
@@ -262,12 +263,12 @@ export function Voting({
     if (hasSubmitted) return;
     
     // Don't allow voting for own submission
-    const submission = (submissions.length > 0 ? submissions : MOCK_SUBMISSIONS).find(s => s.id === submissionId);
+    const submission = submissions.find(s => s.id === submissionId);
     if (submission?.soundMakerId === myPlayerId || submission?.gifSelectorId === myPlayerId) {
       return;
     }
     
-    setSelectedSubmission(submissionId);
+    setSelectedSubmission(prev => prev === submissionId ? null : submissionId);
   };
 
   const handlePreview = (submissionId: string) => {
@@ -277,7 +278,7 @@ export function Voting({
     } else {
       setPlayingAudio(submissionId);
       // Auto stop after duration
-      const submission = (submissions.length > 0 ? submissions : MOCK_SUBMISSIONS).find(s => s.id === submissionId);
+      const submission = submissions.find(s => s.id === submissionId);
       if (submission) {
         setTimeout(() => setPlayingAudio(null), submission.audioDuration * 1000);
       }
@@ -297,7 +298,7 @@ export function Voting({
     }
   };
 
-  const displaySubmissions = submissions.length > 0 ? submissions : MOCK_SUBMISSIONS;
+  const displaySubmissions = submissions;
 
   return (
     <Container>
@@ -310,6 +311,12 @@ export function Voting({
         </Header>
 
         <SubmissionGrid>
+          {displaySubmissions.length === 0 && (
+            <Card style={{ textAlign: 'center', padding: '32px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>⏳</div>
+              <div style={{ color: theme.gray }}>Waiting for submissions...</div>
+            </Card>
+          )}
           {displaySubmissions.map((submission, index) => {
             const isOwn = submission.soundMakerId === myPlayerId || submission.gifSelectorId === myPlayerId;
             const isSelected = selectedSubmission === submission.id;

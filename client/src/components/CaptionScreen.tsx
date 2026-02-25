@@ -486,7 +486,7 @@ export function CaptionScreen({
               onClick={handleSubmit}
               disabled={!caption.trim()}
             >
-              {caption.trim() ? '✅ SUBMIT MATCH' : 'Write a caption first...'}
+              {caption.trim() ? '✅ SUBMIT CAPTION' : 'Write a caption first...'}
             </Button>
           </>
         )}

@@ -225,7 +225,8 @@ const NextRoundTimer = styled.div`
   }
 `;
 
-const MOCK_LEADERBOARD: LeaderboardEntry[] = [
+// @ts-ignore
+const _MOCK_LEADERBOARD: LeaderboardEntry[] = [
   { rank: 1, playerId: '1', nickname: 'SoundNinja', avatar: '🎭', score: 450, scoreChange: 150 },
   { rank: 2, playerId: '2', nickname: 'GifMaster', avatar: '🎸', score: 380, scoreChange: 120 },
   { rank: 3, playerId: '3', nickname: 'NoisyPenguin', avatar: '🎪', score: 320, scoreChange: 80 },
@@ -246,7 +247,8 @@ const MOCK_WINNER: Submission = {
   votes: 4,
 };
 
-const MOCK_AWARDS = [
+// @ts-ignore
+const _MOCK_AWARDS = [
   { category: '🎭 Best Actor', winner: 'SoundNinja' },
   { category: '🎨 Most Creative', winner: 'MemeLord' },
   { category: '😂 Comedian', winner: 'SoundNinja' },
@@ -276,9 +278,9 @@ export function Scoring({
   const [timer, setTimer] = useState(Math.ceil(nextRoundDelay / 1000));
   const [animatedScores, setAnimatedScores] = useState<Record<string, number>>({});
 
-  const displayWinner = winner.id ? winner : MOCK_WINNER;
-  const displayLeaderboard = leaderboard.length > 0 ? leaderboard : MOCK_LEADERBOARD;
-  const displayAwards = awards.length > 0 ? awards : MOCK_AWARDS;
+  const displayWinner = winner?.id ? winner : MOCK_WINNER;
+  const displayLeaderboard = leaderboard.length > 0 ? leaderboard : [];
+  const displayAwards = awards.length > 0 ? awards : [];
 
   // Countdown timer
   useEffect(() => {
